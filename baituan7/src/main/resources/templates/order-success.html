@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Đặt Hàng Thành Công — BookStore</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+    <style>
+        * { font-family: 'Be Vietnam Pro', sans-serif; }
+        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .gradient-success { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); }
+        .btn-primary { background: linear-gradient(135deg, #667eea, #764ba2); transition: all 0.2s; }
+        .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); box-shadow: 0 6px 20px rgba(102,126,234,0.4); }
+        @keyframes pop { 0% { transform: scale(0.5); opacity: 0; } 70% { transform: scale(1.1); } 100% { transform: scale(1); opacity: 1; } }
+        .pop-in { animation: pop 0.5s ease forwards; }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .fade-up { animation: fadeUp 0.5s ease 0.3s both; }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen">
+
+<!-- Navbar -->
+<nav class="bg-gray-900">
+    <div class="max-w-7xl mx-auto px-6">
+        <div class="flex items-center h-16 gap-3">
+            <div class="w-8 h-8 gradient-bg rounded-xl flex items-center justify-center shadow-lg">
+                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+            </div>
+            <span class="text-white font-bold">BookStore</span>
+        </div>
+    </div>
+</nav>
+
+<!-- Success Hero -->
+<div class="gradient-bg py-16">
+    <div class="max-w-2xl mx-auto px-6 text-center">
+        <div class="pop-in w-24 h-24 bg-white/20 backdrop-blur rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-2xl border border-white/30">
+            <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+            </svg>
+        </div>
+        <h1 class="fade-up text-3xl font-extrabold text-white mb-2">Đặt Hàng Thành Công! 🎉</h1>
+        <p class="fade-up text-purple-200 text-sm">Cảm ơn bạn đã tin tưởng BookStore. Đơn hàng của bạn đang được xử lý.</p>
+    </div>
+</div>
+
+<main class="max-w-2xl mx-auto px-6 -mt-6 pb-12">
+
+    <!-- Order Card -->
+    <div class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden fade-up">
+
+        <!-- Order Info Header -->
+        <div class="px-6 py-5 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+            <div>
+                <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Mã Đơn Hàng</p>
+                <p class="font-extrabold text-gray-800 text-lg font-mono" th:text="'#' + ${order.id}"></p>
+            </div>
+            <div class="text-right">
+                <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Ngày Đặt</p>
+                <p class="font-semibold text-gray-600 text-sm" th:text="${order.orderDate}"></p>
+            </div>
+            <div>
+                <span class="inline-flex items-center gap-1.5 bg-emerald-50 text-emerald-600 text-xs font-bold px-3 py-2 rounded-full border border-emerald-100">
+                    <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span>
+                    Đã xác nhận
+                </span>
+            </div>
+        </div>
+
+        <!-- Danh sách sản phẩm -->
+        <div class="divide-y divide-gray-50">
+            <div th:each="detail : ${order.details}" class="px-6 py-5 flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 gradient-bg rounded-xl flex items-center justify-center shadow-md flex-shrink-0">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                    </div>
+                    <div>
+                        <p class="font-semibold text-gray-800 text-sm" th:text="${detail.bookTitle}"></p>
+                        <p class="text-xs text-gray-400 mt-0.5">
+                            <span th:text="${#numbers.formatDecimal(detail.price, 1, 0)}"></span> ₫
+                            <span class="mx-1">×</span>
+                            <span th:text="${detail.quantity}"></span> quyển
+                        </p>
+                    </div>
+                </div>
+                <span class="font-bold text-gray-700" th:text="${#numbers.formatDecimal(detail.total, 1, 0)} + ' ₫'"></span>
+            </div>
+        </div>
+
+        <!-- Tổng cộng -->
+        <div class="px-6 py-5 bg-gray-50 border-t border-gray-100">
+            <div class="flex justify-between items-center">
+                <span class="font-bold text-gray-700">Tổng Cộng</span>
+                <span class="text-2xl font-extrabold text-violet-600" th:text="${#numbers.formatDecimal(order.totalAmount, 1, 0)} + ' ₫'"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Info boxes -->
+    <div class="grid grid-cols-3 gap-4 mt-5 fade-up">
+        <div class="bg-white rounded-2xl p-5 text-center shadow-sm border border-gray-100">
+            <div class="text-2xl mb-2">📦</div>
+            <p class="text-xs font-bold text-gray-700">Đang đóng gói</p>
+            <p class="text-xs text-gray-400 mt-0.5">1-2 ngày</p>
+        </div>
+        <div class="bg-white rounded-2xl p-5 text-center shadow-sm border border-gray-100">
+            <div class="text-2xl mb-2">🚚</div>
+            <p class="text-xs font-bold text-gray-700">Giao hàng</p>
+            <p class="text-xs text-gray-400 mt-0.5">2-3 ngày</p>
+        </div>
+        <div class="bg-white rounded-2xl p-5 text-center shadow-sm border border-gray-100">
+            <div class="text-2xl mb-2">✅</div>
+            <p class="text-xs font-bold text-gray-700">Nhận hàng</p>
+            <p class="text-xs text-gray-400 mt-0.5">Ký nhận</p>
+        </div>
+    </div>
+
+    <!-- CTA -->
+    <a th:href="@{/books}" class="btn-primary mt-5 w-full flex items-center justify-center gap-2 text-white font-bold py-4 rounded-2xl shadow-lg text-sm fade-up">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+        Tiếp Tục Mua Sắm
+    </a>
+</main>
+</body>
+</html>

@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="vi">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Đơn Hàng Của Tôi — BookStore</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+    <style>
+        * { font-family: 'Be Vietnam Pro', sans-serif; }
+        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .btn-primary { background: linear-gradient(135deg, #667eea, #764ba2); transition: all 0.2s; }
+        .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen">
+
+<!-- Navbar -->
+<nav class="bg-gray-900 sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-6">
+        <div class="flex items-center justify-between h-16">
+            <div class="flex items-center gap-3">
+                <a th:href="@{/books}" class="flex items-center justify-center w-8 h-8 rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-400 hover:text-white transition">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                </a>
+                <div class="w-8 h-8 gradient-bg rounded-xl flex items-center justify-center shadow-lg">
+                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                </div>
+                <span class="text-white font-bold">BookStore</span>
+            </div>
+            <div class="flex items-center gap-2">
+                <span class="text-gray-200 text-sm font-medium" sec:authentication="name"></span>
+                <form th:action="@{/auth/logout}" method="post">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                    <button type="submit" class="flex items-center gap-1.5 bg-gray-800 hover:bg-red-900/50 border border-gray-700 hover:border-red-700 text-gray-400 hover:text-red-400 text-sm px-3 py-2 rounded-xl transition">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                        Đăng xuất
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- Hero -->
+<div class="gradient-bg">
+    <div class="max-w-5xl mx-auto px-6 py-10">
+        <h1 class="text-3xl font-bold text-white mb-1">Đơn Hàng Của Tôi</h1>
+        <p class="text-purple-200 text-sm">Theo dõi trạng thái các đơn hàng bạn đã đặt</p>
+    </div>
+</div>
+
+<main class="max-w-5xl mx-auto px-6 -mt-5 pb-12">
+
+    <!-- Trống -->
+    <div th:if="${#lists.isEmpty(orders)}"
+         class="bg-white rounded-2xl shadow-xl border border-gray-100 p-20 text-center">
+        <div class="w-20 h-20 bg-violet-50 rounded-3xl flex items-center justify-center mx-auto mb-5 border border-violet-100">
+            <svg class="w-10 h-10 text-violet-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+        </div>
+        <h2 class="text-xl font-bold text-gray-700 mb-2">Chưa có đơn hàng nào</h2>
+        <p class="text-gray-400 text-sm mb-8">Hãy mua sắm và đặt hàng ngay!</p>
+        <a th:href="@{/books}" class="btn-primary inline-flex items-center gap-2 text-white font-semibold px-8 py-3.5 rounded-xl shadow-lg text-sm">
+            Mua Sắm Ngay
+        </a>
+    </div>
+
+    <!-- Danh sách đơn hàng -->
+    <div th:if="${not #lists.isEmpty(orders)}" class="space-y-4">
+        <div th:each="order : ${orders}"
+             class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+
+            <!-- Header đơn hàng -->
+            <div class="px-6 py-4 bg-gray-50 border-b border-gray-100 flex flex-wrap items-center justify-between gap-3">
+                <div class="flex items-center gap-4">
+                    <div>
+                        <p class="text-xs text-gray-400 font-semibold uppercase tracking-widest">Mã đơn hàng</p>
+                        <p class="font-extrabold text-gray-800 font-mono" th:text="'#' + ${order.id}"></p>
+                    </div>
+                    <div class="w-px h-8 bg-gray-200"></div>
+                    <div>
+                        <p class="text-xs text-gray-400 font-semibold uppercase tracking-widest">Ngày đặt</p>
+                        <p class="font-medium text-gray-600 text-sm" th:text="${#temporals.format(order.orderDate, 'dd/MM/yyyy HH:mm')}"></p>
+                    </div>
+                    <div class="w-px h-8 bg-gray-200"></div>
+                    <div>
+                        <p class="text-xs text-gray-400 font-semibold uppercase tracking-widest">Tổng tiền</p>
+                        <p class="font-bold text-violet-600" th:text="${#numbers.formatDecimal(order.totalAmount, 1, 0)} + ' ₫'"></p>
+                    </div>
+                </div>
+
+                <!-- Badge trạng thái -->
+                <div>
+                    <span th:if="${order.status == 'PENDING'}"
+                          class="inline-flex items-center gap-1.5 bg-amber-50 text-amber-600 border border-amber-200 text-xs font-bold px-4 py-2 rounded-full">
+                        <span class="w-2 h-2 bg-amber-400 rounded-full animate-pulse"></span>
+                        Chờ xác nhận
+                    </span>
+                    <span th:if="${order.status == 'CONFIRMED'}"
+                          class="inline-flex items-center gap-1.5 bg-blue-50 text-blue-600 border border-blue-200 text-xs font-bold px-4 py-2 rounded-full">
+                        <span class="w-2 h-2 bg-blue-400 rounded-full"></span>
+                        Đã xác nhận
+                    </span>
+                    <span th:if="${order.status == 'SHIPPING'}"
+                          class="inline-flex items-center gap-1.5 bg-violet-50 text-violet-600 border border-violet-200 text-xs font-bold px-4 py-2 rounded-full">
+                        <span class="w-2 h-2 bg-violet-400 rounded-full animate-pulse"></span>
+                        Đang giao hàng
+                    </span>
+                    <span th:if="${order.status == 'DELIVERED'}"
+                          class="inline-flex items-center gap-1.5 bg-emerald-50 text-emerald-600 border border-emerald-200 text-xs font-bold px-4 py-2 rounded-full">
+                        <span class="w-2 h-2 bg-emerald-400 rounded-full"></span>
+                        Đã giao hàng
+                    </span>
+                </div>
+            </div>
+
+            <!-- Thanh tiến trình -->
+            <div class="px-6 py-4 border-b border-gray-50">
+                <div class="flex items-center gap-0">
+                    <div class="flex flex-col items-center">
+                        <div th:classappend="${order.status == 'PENDING' or order.status == 'CONFIRMED' or order.status == 'SHIPPING' or order.status == 'DELIVERED'} ? 'bg-violet-600' : 'bg-gray-200'"
+                             class="w-8 h-8 rounded-full flex items-center justify-center">
+                            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1 font-medium">Đặt hàng</p>
+                    </div>
+                    <div th:classappend="${order.status == 'CONFIRMED' or order.status == 'SHIPPING' or order.status == 'DELIVERED'} ? 'bg-violet-600' : 'bg-gray-200'"
+                         class="flex-1 h-1 mx-1"></div>
+                    <div class="flex flex-col items-center">
+                        <div th:classappend="${order.status == 'CONFIRMED' or order.status == 'SHIPPING' or order.status == 'DELIVERED'} ? 'bg-violet-600' : 'bg-gray-200'"
+                             class="w-8 h-8 rounded-full flex items-center justify-center">
+                            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1 font-medium">Xác nhận</p>
+                    </div>
+                    <div th:classappend="${order.status == 'SHIPPING' or order.status == 'DELIVERED'} ? 'bg-violet-600' : 'bg-gray-200'"
+                         class="flex-1 h-1 mx-1"></div>
+                    <div class="flex flex-col items-center">
+                        <div th:classappend="${order.status == 'SHIPPING' or order.status == 'DELIVERED'} ? 'bg-violet-600' : 'bg-gray-200'"
+                             class="w-8 h-8 rounded-full flex items-center justify-center">
+                            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0"/></svg>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1 font-medium">Giao hàng</p>
+                    </div>
+                    <div th:classappend="${order.status == 'DELIVERED'} ? 'bg-violet-600' : 'bg-gray-200'"
+                         class="flex-1 h-1 mx-1"></div>
+                    <div class="flex flex-col items-center">
+                        <div th:classappend="${order.status == 'DELIVERED'} ? 'bg-emerald-500' : 'bg-gray-200'"
+                             class="w-8 h-8 rounded-full flex items-center justify-center">
+                            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1 font-medium">Nhận hàng</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chi tiết sản phẩm -->
+            <div class="divide-y divide-gray-50">
+                <div th:each="detail : ${order.details}" class="px-6 py-4 flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 gradient-bg rounded-xl flex items-center justify-center flex-shrink-0">
+                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                        </div>
+                        <div>
+                            <p class="font-semibold text-gray-800 text-sm" th:text="${detail.bookTitle}"></p>
+                            <p class="text-xs text-gray-400 mt-0.5"
+                               th:text="${#numbers.formatDecimal(detail.price, 1, 0)} + ' ₫ × ' + ${detail.quantity} + ' quyển'"></p>
+                        </div>
+                    </div>
+                    <p class="font-bold text-gray-700 text-sm"
+                       th:text="${#numbers.formatDecimal(detail.total, 1, 0)} + ' ₫'"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+</body>
+</html>
